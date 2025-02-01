@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #body {
+            display: flex;
+        }
+
+        #side {
+            max-width: 30%;
+        }
+
+        #main {
+            max-width: 70%;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="body">
+        <div id="side" class="w-25 p-3 py-2 m-3 shadow rounded">
+            <h4 align="center">Add Income </h4>
+            <form action="/budgetHome/addIncome" method="post">
+                <label class="form-label">Enter Income</label>
+                <input type="text" name="income" class="form-control" placeholder="Enter Income" />
+                <br />
+                <label class="form-label">Enter Date</label>
+                <input type="date" name="idate" class="form-control" placeholder="Enter Income" />
+                <br />
+                <input class="btn btn-success w-100" type="submit" value="Add Income" />
+            </form>
+            <br />
+            <h4 align="center">Add Expence </h4>
+            <form action="/budgetHome/addExpence" method="post">
+                <label class="form-label">Enter Title</label>
+                <input type="text" name="title" class="form-control" placeholder="Enter Expence Name" />
+                <br />
+                <label class="form-label">Enter Expence</label>
+                <input type="text" name="expence" class="form-control" placeholder="Enter Expence " />
+                <br />
+                <label class="form-label">Enter Date</label>
+                <input type="date" name="edate" class="form-control" placeholder="Enter Expence Date" />
+                <br />
+                <input class="btn btn-success w-100" type="submit" value="Add Income" />
+            </form>
+        </div>
+        <div id="main">
+            <div>
+                Income :- <%= incomeData %>
+                    &nbsp;&nbsp;&nbsp;Expenses :- <%= TotalExpence %>
+                        &nbsp;&nbsp;&nbsp; Saving :- <%= incomeData - TotalExpence %>
+                            <div class="d-flex">
+                                <div class="my-5 me-5 pe-5">
+                                    <canvas id="myChart"></canvas>
+                                </div>
+                                <div class="my-5">
+                                    <canvas id="Compair"></canvas>
+                                </div>
+                            </div>
+                            <div>
+                                <table class="table">
+                                    <tr>
+                                        <td>No</td>
+                                        <td>Expence Titile</td>
+                                        <td>Price</td>
+                                        <td>Date</td>
+                                    </tr>
+                                    <% expenceData.map((v , i)=> { %>
+                                        <tr>
+                                            <td>
+                                                <%= i+1 %>
+                                            </td>
+                                            <td>
+                                                <%= v.title %>
+                                            </td>
+                                            <td>
+                                                <%= v.expence %>
+                                            </td>
+                                            <td>
+                                                <%= v.edate %>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </table>
+                            </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('myChart');
+        let label = '<%- JSON.stringify(labelName) %>'
+        let priceValue = '<%- JSON.stringify(price) %>'
+        console.log(label);
+
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: JSON.parse(label),
+                datasets: [{
+                    label: 'Expenses',
+                    data: JSON.parse(priceValue),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        const btx = document.getElementById('Compair');
+        let labelGroseIncome = ['Income', 'Expenses' , 'Saving']
+        let grosslabel = JSON.stringify(labelGroseIncome);
+        let IncomeData = <%= incomeData %>;
+        let totalExpenses = <%= TotalExpence %> ;
+        let Saving = <%= incomeData - TotalExpence %> ;
+
+        let PriceValue = [IncomeData, totalExpenses , Saving]
+
+        new Chart(btx, {
+            type: 'doughnut',
+            data: {
+                labels: JSON.parse(grosslabel),
+                datasets: [{
+                    label: '# of Votes',
+                    data: PriceValue,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
